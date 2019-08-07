@@ -1,0 +1,44 @@
+server:
+  port: 5003
+
+spring:
+  application:
+    name: @artifactId@
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: dongfang_user
+#    password: sK5zT$YEl#S*YKLK8Qm^6b0iH7j!M0JU
+#    url: jdbc:mysql://rm-wz92b2gr6ottr6e60wo.mysql.rds.aliyuncs.com:3306/dongfang_dev?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+    password: 123456
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=murugar
+    username: postgres
+    driver-class-name: org.postgresql.Driver
+# Mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.postgres.codegen.entity
+
+swagger:
+  # 是否启用swagger，默认：true
+  enabled: true
+  # 标题
+  title: 客户信息构建RESTful API
+  contact:
+    # 维护人
+    name: Eddid
+    email: Eddidlu@newtype.io
+    url: https://www.newtype.io
+  # 版本
+  version: @project.version@
+  # 描述
+  description: 代码生成
+  # swagger扫描的基础包，默认：全扫描
+  base-package: com.postgres.codegen.controller
+  # 需要处理的基础URL规则，默认：/**
+  base-path: /**
+  # 需要排除的URL规则，默认：空
+  #  exclude-path: ""
+  license: Apache License, Version 2.0
+  license-url: https://www.apache.org/licenses/LICENSE-2.0.html
