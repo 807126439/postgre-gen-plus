@@ -23,7 +23,7 @@ import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import com.postgres.codegen.constants.CommonConstants;
 import com.postgres.codegen.entity.ColumnEntity;
-import com.postgres.codegen.entity.GenConfig;
+import com.postgres.codegen.entity.dto.GenCodeVo;
 import com.postgres.codegen.entity.TableEntity;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -84,30 +84,17 @@ public class GenUtils {
 	/**
 	 * 生成代码
 	 */
-	public void generatorCode(GenConfig genConfig, Map<String, String> table,
+	public void generatorCode(String tableName, String packageName, String author, String moduleName,
 							  List<Map<String, String>> columns, ZipOutputStream zip) {
 		//配置信息
 		Configuration config = getConfig();
 		boolean hasBigDecimal = false;
 		//表信息
 		TableEntity tableEntity = new TableEntity();
-		tableEntity.setTableName(table.get("tablename"));
-
-		if (StrUtil.isNotBlank(genConfig.getComments())) {
-			tableEntity.setComments(genConfig.getComments());
-		} /*else {
-			tableEntity.setComments(table.get("tableComment"));
-		}*/
-
-		String tablePrefix;
-		if (StrUtil.isNotBlank(genConfig.getTablePrefix())) {
-			tablePrefix = genConfig.getTablePrefix();
-		} else {
-			tablePrefix = config.getString("tablePrefix");
-		}
+		tableEntity.setTableName(tableName);
 
 		//表名转换成Java类名
-		String className = tableToJava(tableEntity.getTableName(), tablePrefix);
+		String className = tableToJava(tableEntity.getTableName());
 		tableEntity.setCaseClassName(className);
 		tableEntity.setLowerClassName(StringUtils.uncapitalize(className));
 
@@ -160,27 +147,21 @@ public class GenUtils {
 		map.put("hasBigDecimal", hasBigDecimal);
 		map.put("datetime", DateUtil.now());
 
-		if (StrUtil.isNotBlank(genConfig.getComments())) {
-			map.put("comments", genConfig.getComments());
-		} else {
-			map.put("comments", tableEntity.getComments());
-		}
-
-		if (StrUtil.isNotBlank(genConfig.getAuthor())) {
-			map.put("author", genConfig.getAuthor());
+		if (StrUtil.isNotBlank(author)) {
+			map.put("author", author);
 		} else {
 			map.put("author", config.getString("author"));
 		}
 
-		if (StrUtil.isNotBlank(genConfig.getSchema())) {
-			map.put("moduleName", genConfig.getSchema());
-		} else {
-			map.put("moduleName", config.getString("moduleName"));
+		if (StrUtil.isNotBlank(moduleName)) {
+			map.put("moduleName", moduleName);
+		}else{
+			map.put("moduleName", "");
 		}
 
-		if (StrUtil.isNotBlank(genConfig.getPackageName())) {
-			map.put("package", genConfig.getPackageName());
-			map.put("mainPath", genConfig.getPackageName());
+		if (StrUtil.isNotBlank(packageName)) {
+			map.put("package", packageName);
+			map.put("mainPath", packageName);
 		} else {
 			map.put("package", config.getString("package"));
 			map.put("mainPath", config.getString("mainPath"));
@@ -220,10 +201,7 @@ public class GenUtils {
 	/**
 	 * 表名转换成Java类名
 	 */
-	private String tableToJava(String tableName, String tablePrefix) {
-		if (StringUtils.isNotBlank(tablePrefix)) {
-			tableName = tableName.replaceFirst(tablePrefix, "");
-		}
+	private String tableToJava(String tableName) {
 		return columnToJava(tableName);
 	}
 

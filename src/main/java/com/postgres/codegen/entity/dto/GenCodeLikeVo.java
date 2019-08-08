@@ -15,32 +15,31 @@
  * Author: Eddid (River.lu@newtype.io)
  */
 
-package com.postgres.codegen.service;
+package com.postgres.codegen.entity.dto;
 
-import com.postgres.codegen.entity.dto.GenCodeLikeVo;
-import com.postgres.codegen.entity.dto.GenCodeVo;
+import lombok.Data;
 
 /**
- * 代码生成器
- *
  * @author Eddid
- * @date 2019-05-20
+ * @date 2018/8/2
+ * 生成配置
  */
-public interface SysGeneratorService {
+@Data
+public class GenCodeLikeVo {
 	/**
-	 * 批量生成代码
-	 *
-	 * @param genCodeVo 表名称
-	 * @return
+	 * 包名
 	 */
-	byte[] generatorByTableNames(GenCodeVo genCodeVo);
-
+	private String packageName;
 	/**
-	 * 批量模糊生成代码
-	 *
-	 * @param genCodeLikeVo 表名称
-	 * @return
+	 * 模块名
 	 */
-	byte[] generatorByTalbleNameLike(GenCodeLikeVo genCodeLikeVo);
-
+	private String moduleName;
+	/**
+	 * 作者
+	 */
+	private String author;
+	/**
+	 * 表名称
+	 */
+	private String tableNameLike;
 }

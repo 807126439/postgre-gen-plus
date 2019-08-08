@@ -18,8 +18,11 @@
 package com.postgres.codegen.controller;
 
 import cn.hutool.core.io.IoUtil;
-import com.postgres.codegen.entity.GenConfig;
+import com.postgres.codegen.config.GenerateProperties;
+import com.postgres.codegen.entity.dto.GenCodeLikeVo;
+import com.postgres.codegen.entity.dto.GenCodeVo;
 import com.postgres.codegen.service.SysGeneratorService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +39,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/generator")
+@AllArgsConstructor
 public class SysGeneratorController {
+	private final GenerateProperties generateProperties;
 
 	@Autowired
 	private SysGeneratorService sysGeneratorService;
@@ -45,12 +50,12 @@ public class SysGeneratorController {
 	 * 生成代码
 	 */
 	@SneakyThrows
-	@PostMapping("/code")
-	public void generatorCode(@RequestBody List<GenConfig> genConfigs, HttpServletResponse response) {
-		byte[] data = sysGeneratorService.generatorCode(genConfigs);
+	@PostMapping("/tableNames")
+	public void generatorByTableNames(@RequestBody GenCodeVo genCodeVo, HttpServletResponse response) {
+		byte[] data = sysGeneratorService.generatorByTableNames(genCodeVo);
 
 		response.reset();
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", genConfigs.get(0).getTableName()));
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", genCodeVo.getPackageName()));
 		response.addHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(data.length));
 		response.setContentType("application/octet-stream; charset=UTF-8");
 
@@ -61,12 +66,12 @@ public class SysGeneratorController {
 	 * 模糊生成代码
 	 */
 	@SneakyThrows
-	@PostMapping("/codeLike")
-	public void generatorCodeLike(@RequestBody GenConfig genConfig, HttpServletResponse response) {
-		byte[] data = sysGeneratorService.generatorCodeLike(genConfig);
+	@PostMapping("/tableNameLike")
+	public void generatorByTalbleNameLike(@RequestBody GenCodeLikeVo genCodeLikeVo, HttpServletResponse response) {
+		byte[] data = sysGeneratorService.generatorByTalbleNameLike(genCodeLikeVo);
 
 		response.reset();
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", genConfig.getTableName()));
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", genCodeLikeVo.getPackageName()));
 		response.addHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(data.length));
 		response.setContentType("application/octet-stream; charset=UTF-8");
 

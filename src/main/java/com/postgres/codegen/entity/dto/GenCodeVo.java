@@ -15,7 +15,7 @@
  * Author: Eddid (River.lu@newtype.io)
  */
 
-package com.postgres.codegen.entity;
+package com.postgres.codegen.entity.dto;
 
 import lombok.Data;
 
@@ -25,31 +25,21 @@ import lombok.Data;
  * 生成配置
  */
 @Data
-public class GenConfig {
+public class GenCodeVo {
 	/**
 	 * 包名
 	 */
 	private String packageName;
 	/**
+	 * 模块名
+	 */
+	private String moduleName;
+	/**
 	 * 作者
 	 */
 	private String author;
 	/**
-	 * 模块名称
-	 */
-	private String schema;
-	/**
-	 * 表前缀
-	 */
-	private String tablePrefix;
-
-	/**
 	 * 表名称
 	 */
-	private String tableName;
-
-	/**
-	 * 表备注
-	 */
-	private String comments;
+	private String[] tableNames;
 }

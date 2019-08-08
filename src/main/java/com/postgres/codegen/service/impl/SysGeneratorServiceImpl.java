@@ -18,10 +18,13 @@
 package com.postgres.codegen.service.impl;
 
 import cn.hutool.core.io.IoUtil;
+import com.postgres.codegen.config.GenerateProperties;
+import com.postgres.codegen.entity.dto.GenCodeLikeVo;
 import com.postgres.codegen.service.SysGeneratorService;
-import com.postgres.codegen.entity.GenConfig;
+import com.postgres.codegen.entity.dto.GenCodeVo;
 import com.postgres.codegen.mapper.SysGeneratorMapper;
 import com.postgres.codegen.util.GenUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,29 +40,31 @@ import java.util.zip.ZipOutputStream;
  * @date 2019-05-20
  */
 @Service
+@AllArgsConstructor
 public class SysGeneratorServiceImpl implements SysGeneratorService {
+	private final GenerateProperties generateProperties;
+
 	@Autowired
 	private SysGeneratorMapper sysGeneratorMapper;
-
 
 	/**
 	 * 批量生成代码
 	 *
-	 * @param genConfigs 生成配置
+	 * @param genCodeVo 生成配置
 	 * @return
 	 */
 	@Override
-	public byte[] generatorCode(List<GenConfig> genConfigs) {
+	public byte[] generatorByTableNames(GenCodeVo genCodeVo) {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		ZipOutputStream zip = new ZipOutputStream(outputStream);
 
-		for(GenConfig genConfig: genConfigs) {
+		for(String tableName: genCodeVo.getTableNames()) {
 			//查询表信息
-			Map<String, String> table = queryTable(genConfig.getSchema(), genConfig.getTableName());
+			Map<String, String> table = queryTable(generateProperties.getSchema(), tableName);
 			//查询列信息
-			List<Map<String, String>> columns = queryColumns(genConfig.getSchema(),genConfig.getTableName());
+			List<Map<String, String>> columns = queryColumns(generateProperties.getSchema(), tableName);
 			//生成代码
-			GenUtils.generatorCode(genConfig, table, columns, zip);
+			GenUtils.generatorCode(tableName, genCodeVo.getPackageName(), genCodeVo.getAuthor(), genCodeVo.getModuleName(), columns, zip);
 		}
 		IoUtil.close(zip);
 		return outputStream.toByteArray();
@@ -68,21 +73,21 @@ public class SysGeneratorServiceImpl implements SysGeneratorService {
 	/**
 	 * 批量模糊生成代码
 	 *
-	 * @param genConfig 生成配置
+	 * @param genCodeLikeVo 生成配置
 	 * @return
 	 */
 	@Override
-	public byte[] generatorCodeLike(GenConfig genConfig) {
+	public byte[] generatorByTalbleNameLike(GenCodeLikeVo genCodeLikeVo) {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		ZipOutputStream zip = new ZipOutputStream(outputStream);
 
-		List<Map<String, String>> tables = queryList(genConfig.getSchema(),genConfig.getTableName());
+		List<Map<String, String>> tables = queryList(generateProperties.getSchema(), genCodeLikeVo.getTableNameLike());
 		for(Map<String, String> table: tables) {
-			genConfig.setTableName(table.get("tableName"));
+			String tableName = table.get("tableName");
 			//查询列信息
-			List<Map<String, String>> columns = queryColumns(genConfig.getSchema(),genConfig.getTableName());
+			List<Map<String, String>> columns = queryColumns(generateProperties.getSchema(), tableName);
 			//生成代码
-			GenUtils.generatorCode(genConfig, table, columns, zip);
+			GenUtils.generatorCode(tableName, genCodeLikeVo.getPackageName(), genCodeLikeVo.getAuthor(), genCodeLikeVo.getModuleName(), columns, zip);
 		}
 		IoUtil.close(zip);
 		return outputStream.toByteArray();

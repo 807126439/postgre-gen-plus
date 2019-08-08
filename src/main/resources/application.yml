@@ -20,6 +20,13 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.postgres.codegen.entity
 
+generate:
+  schema: murugar
+  author: River
+  moduleName: myModule
+  packageName: com.river.murugar
+  mainPath: com.river.murugar
+
 swagger:
   # 是否启用swagger，默认：true
   enabled: true
